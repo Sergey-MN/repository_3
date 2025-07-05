@@ -1,0 +1,38 @@
+
+services:
+  web:
+    build: ./someproject
+    command: >
+      sh -c "python manage.py makemigrations &&
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./someproject:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - ./someproject/.env
+
+  bot:
+    build: ./telebot
+    command: python main.py
+    volumes:
+      - ./telebot:/app
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    env_file:
+      - ./telebot/.env
+
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: "someproject_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1234"

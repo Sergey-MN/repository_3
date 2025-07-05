@@ -1,0 +1,34 @@
+services:
+  web:  # Django
+    build: ./someproject
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./someproject:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - ./someproject/.env  # если есть
+
+  bot:  # FastAPI/Telebot
+    build: ./telebot
+    command: uvicorn main:app --host 0.0.0.0 --port 9000
+    volumes:
+      - ./telebot:/app
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    env_file:
+      - ./telebot/.env
+
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}

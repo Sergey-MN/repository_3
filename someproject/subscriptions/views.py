@@ -19,6 +19,9 @@ class SubscriptionPagination(PageNumberPagination):
     max_page_size = 50
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
-    queryset = UserSubscription.objects.all()
+    queryset = UserSubscription.objects.none()
     serializer_class = SubscriptionSerializer
     pagination_class = SubscriptionPagination
+
+    def get_queryset(self):
+        return UserSubscription.objects.filter(user_id=self.request.user)

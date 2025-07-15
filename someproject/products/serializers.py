@@ -8,7 +8,7 @@ class OrdersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = '__all__'
-
+        read_only_fields = ['customer']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password], style={'input_type': 'password'})

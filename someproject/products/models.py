@@ -22,11 +22,11 @@ class MyManager(models.Manager):
 
 class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, validators=[phone_validator], verbose_name='Телефон', unique=True)
-    telegram_id = models.CharField(max_length=20, blank=True, null=True)
+    telegram_id = models.CharField(max_length=20, blank=True, default=0)
 
 
 class Orders(models.Model):
-    customer = models.ForeignKey(get_user_model(), related_name='customer', on_delete=models.CASCADE, blank=True)
+    customer = models.ForeignKey(get_user_model(), related_name='customer', on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     products = models.JSONField(default=dict)
 

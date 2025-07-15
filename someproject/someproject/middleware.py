@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
+
+from subscriptions.models import UserSubscription
 
 
 class CheckSubsMiddleware:
@@ -9,13 +11,9 @@ class CheckSubsMiddleware:
     def __call__(self, request):
         if request.path.startswith('/api/products/'):
             if request.user.is_authenticated:
-                user_id = request.user.id
-                u = get_user_model().objects.get(id=user_id)
-                if u.is_active:
-                    response = self.get_response(request)
-                    return response
-            return HttpResponse('Приобретите подписку!!!')
-        else:
-            response = self.get_response(request)
-            return response
+                if not UserSubscription.objects.filter(user_id=request.user.id).exists():
+                    return HttpResponseForbidden('Приобретите подписку!!!')
+            else:
+                return HttpResponseForbidden('Необходимо авторизоваться!')
 
+        return self.get_response(request)
